@@ -11,6 +11,7 @@ gem "importmap-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "jbuilder"
+gem 'sidekiq'
 gem "elasticsearch-rails", "~> 8.0"
 gem "elasticsearch-model", "~> 8.0"
 gem "elasticsearch", "~> 8.14.0"
@@ -20,6 +21,7 @@ gem "hashie", "~> 5.0"
 gem "multi_json", "~> 1.15.0"
 gem 'redis', '~> 4.0'
 gem "bcrypt", "~> 3.1.7"
+gem 'uuidtools'
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 gem "bootsnap", require: false
 

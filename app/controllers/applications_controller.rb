@@ -14,8 +14,14 @@ class ApplicationsController < ApplicationController
   end
 
   def create
-    @application = Application.create!(application_params)
-    render json: @application, status: :created
+    @application = Application.new(application_params)
+    @application.token = SecureRandom.uuid # Generate a unique token
+    if @application.save
+      render json: @application, status: :created
+      Rails.logger.debug("Generated Token: #{@application.token}")
+    else
+      render json: { errors: @application.errors.full_messages }, status: :unprocessable_entity
+    end
   rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
   end
@@ -42,6 +48,6 @@ class ApplicationsController < ApplicationController
   private
 
   def application_params
-    params.require(:application).permit(:name, :token)
+    params.require(:application).permit(:name)
   end
 end

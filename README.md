@@ -18,8 +18,8 @@ For Testing APIs
 				 Headers:Content-Type: application/json
 			for the body {
  					 "application": {
-  					  "name": "",
-   					 "token": ""
+  					  "name": ""
+   					 
  							 }
 					}
 2- show all applications GET  http://localhost:3000/applications
@@ -40,7 +40,8 @@ For Testing APIs
 Chats 
 
 1- to create a chat POST http://localhost:3000/applications/app-token/chats
-	and for the body {
+	 ##"there shouldn't be a body "remember to fix this before submission
+                    for the body {
   			"chat": {
   			  "number": 
   				}
@@ -48,17 +49,12 @@ Chats
 2- to list all chats GET  http://localhost:3000/applications/app-token/chats
 
 
-3- view a chat GET http://localhost:3000/applications/unique_token_001/chats/chat-id
+3- view a chat GET http://localhost:3000/applications/app-token/chats/chat-id
 
 
-4-Update a chat PUT http://localhost:3000/applications/unique_token_001/chats/chat-id
-	and for the body {
-  			"chat": {
-   			 "number": 
- 			        }
-			}
 
-5- Delete a chat DELETE http://localhost:3000/applications/unique_token_001/chats/chat-id
+
+4- Delete a chat DELETE http://localhost:3000/applications/app-token/chats/chat-id
 
 
 
@@ -67,8 +63,8 @@ Chats
 1- Create a Message POST http://localhost:3000/applications/app-token/chats/chat-id/messages
   		and for the body {
   			"message": {
-   			 "body": "",
-   			 "number": 
+   			 "body": ""
+   			  
   				}
 				}
 
@@ -80,8 +76,7 @@ Chats
 4-update a message PUT http://localhost:3000/applications/app-token/chats/chat-id/messages/message-id
 	and for the body {
   			"message": {
-   			 "body": "",
-   			 "number": 
+   			 "body": ""
   				}
 				}
 

@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # Routes for applications
   resources :applications, param: :token, only: [:index, :show, :create, :update, :destroy]
 
-  # Nested routes for chats under applications
+  
   resources :applications, param: :token, only: [] do
     resources :chats, only: [:index, :create, :show, :update, :destroy] do
       # Nested routes for messages under chats
@@ -13,4 +13,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
 end

@@ -1,9 +1,8 @@
-version: '3.8'
 
 services:
   web:
     build: .
-    command: rails server -b 0.0.0.0 -p 3000
+    command: bash -c "rm -f tmp/pids/server.pid && rails server -b 0.0.0.0 -p 3000"
     ports:
       - "3000:3000"
     volumes:
@@ -12,8 +11,10 @@ services:
       - db
       - elasticsearch
       - redis
+      - sidekiq
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200  # Ensure Rails app knows where Elasticsearch is
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - REDIS_URL=redis://redis:6379/1  # Ensure Rails app knows where Redis is
 
   db:
     image: mysql:8.0
@@ -21,26 +22,35 @@ services:
       MYSQL_ROOT_PASSWORD: "NewSecurePassword"
       MYSQL_DATABASE: myapp_development
     ports:
-      - "3306:3306"  # Adjusted port to avoid conflict with local MySQL
+      - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql  # Persist MySQL data
-      
+      - db_data:/var/lib/mysql
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.9.1
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false  # Disable security for development
+      - xpack.security.enabled=false
     ports:
       - "9200:9200"
       - "9300:9300"
     volumes:
-      - esdata1:/usr/share/elasticsearch/data  # Persist Elasticsearch data
+      - esdata1:/usr/share/elasticsearch/data
 
   redis:
     image: redis:7
     ports:
       - "6379:6379"
+
+  sidekiq:
+    image: redis:7
+    command: bundle exec sidekiq
+    depends_on:
+      - redis
+    volumes:
+      - ".:/app"
+    environment:
+      - REDIS_URL=redis://redis:6379/1  # Ensure Sidekiq knows where Redis is
 
 volumes:
   db_data:

@@ -1,4 +1,3 @@
-# app/models/message.rb
 class Message < ApplicationRecord
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
@@ -9,7 +8,7 @@ class Message < ApplicationRecord
   validates :number, presence: true, uniqueness: { scope: :chat_id }
   validates :chat, presence: true
 
-  # index settings
+  # Elasticsearch index settings
   settings index: { number_of_shards: 1, number_of_replicas: 0 } do
     mappings dynamic: 'false' do
       indexes :body, type: 'text', analyzer: 'standard'
@@ -17,17 +16,19 @@ class Message < ApplicationRecord
     end
   end
 
-  # for the elasticsearch
+  # Elasticsearch indexing
   def as_indexed_json(options = {})
     as_json(only: [:body, :number, :chat_id])
   end
 
-  after_save :update_chat_messages_count
-  after_destroy :update_chat_messages_count
+  
+  after_save :enqueue_chat_messages_count_update
+  after_destroy :enqueue_chat_messages_count_update
 
   private
 
-  def update_chat_messages_count
-    chat.update(messages_count: chat.messages.size)
+  def enqueue_chat_messages_count_update
+    
+    ChatMessagesCountUpdateJob.perform_later(chat.id)
   end
 end

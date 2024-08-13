@@ -9,7 +9,6 @@ class Chat < ApplicationRecord
   validates :number, presence: true, uniqueness: { scope: :application_id }
   validates :application, presence: true
 
-  before_save :update_messages_count
   after_create :increment_application_chats_count
   after_destroy :decrement_application_chats_count
 
@@ -17,12 +16,10 @@ class Chat < ApplicationRecord
     as_json(only: [:number, :application_id])
   end
 
-  
   def self.index_name
     'chats'
   end
 
-  
   def self.settings
     {
       number_of_shards: 1,
@@ -30,21 +27,32 @@ class Chat < ApplicationRecord
     }
   end
 
-  
   def self.mappings
     {
       properties: {
-        number: { type: 'text' },
+        number: { type: 'integer' },
         application_id: { type: 'integer' }
       }
     }
   end
 
-  private
-
-  def update_messages_count
-    self.messages_count = messages.size
+  def redis
+    @redis ||= Redis.new
   end
+
+  def messages_count
+    redis.get("chat:#{id}:messages_count").to_i
+  end
+
+  def increment_messages_count
+    redis.incr("chat:#{id}:messages_count")
+  end
+
+  def decrement_messages_count
+    redis.decr("chat:#{id}:messages_count")
+  end
+
+  private
 
   def increment_application_chats_count
     application.increment!(:chats_count)
